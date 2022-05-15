@@ -1,0 +1,7 @@
+*.pdf
+data/*
+imgsDuringTraining/*
+__pycache__/*
+*.ipynb
+*.png
+.ipynb_checkpoints/*
