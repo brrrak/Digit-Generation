@@ -5,3 +5,11 @@ __pycache__/*
 *.ipynb
 *.png
 .ipynb_checkpoints/*
+report/main.aux
+report/main.fdb_latexmk
+report/main.fls
+report/main.log
+report/main.out
+report/main.synctex.gz
+report/main.tex
+report/neurips_2021.sty

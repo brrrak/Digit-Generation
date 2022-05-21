@@ -94,8 +94,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=int, default=1, help='Number of training epochs.')
-    parser.add_argument('--visualize', type=bool, default=False, help='Whether to visualize training loss.')
-    parser.add_argument('--save_trained', type=bool, default=False, help='Whether to save the trained model.')
+    parser.add_argument('--visualize', type=bool, default=0, help='Whether to visualize training loss.')
+    parser.add_argument('--save_trained', type=bool, default=0, help='Whether to save the trained model.')
     opt = parser.parse_args()
     print(opt)
 
@@ -144,11 +144,11 @@ if __name__ == '__main__':
                 plt.scatter(epoch,loss_plot_BCE*len(dataset)/64, color = 'green', label='Reconstruction Term')
                 plt.scatter(epoch,loss_plot_KLD*len(dataset)/64, color = 'blue', label='KL Term')
                 plt.scatter(epoch,epoch_loss*len(dataset)/64, color = 'red', label='Total Loss')
-
-    handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))
-    plt.legend(by_label.values(), by_label.keys())
-    plt.show(block=True)
+    if opt.visualize:
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        plt.legend(by_label.values(), by_label.keys())
+        plt.show(block=True)
 
     print('Training Complete.')
 
