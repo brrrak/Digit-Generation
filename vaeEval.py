@@ -10,10 +10,17 @@ import numpy as np
 import argparse
 import os
 import torchvision.utils as vutils
+from tqdm import trange
 
 from vaeTrain import Encoder, Decoder, VAE
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--generateForFID', type=int, default=0, help='Generates and saves 60000 images for FID.')
+    opt = parser.parse_args()
+    print(opt)
+
     dataset = dset.MNIST(root = './data',
                          download = True,
                          transform = transforms.ToTensor())
@@ -60,7 +67,7 @@ if __name__ == '__main__':
     # Generating Fake Images
     torch.manual_seed(101)
     genz = torch.randn((100, 32))
-    print(genz[0])
+    # print(genz[0])
     samples = vae.generate(genz)
     
     # Plotting Fake Images
@@ -69,3 +76,42 @@ if __name__ == '__main__':
     plt.title("Generated Images")
     plt.imshow(np.transpose(vutils.make_grid(samples.to(device)[:100], padding=5, normalize=True, nrow=10).cpu(),(1,2,0)))
     plt.show(block=True)
+
+    if opt.generateForFID:
+        print("Present Working Directory: ",os.getcwd())
+        os.makedirs("gen_images", exist_ok=True)
+        genPath = 'vae'
+
+        print(f"Saving generated images to: {os.getcwd()}/gen_images/{genPath}/")
+        os.makedirs("gen_images/"+genPath, exist_ok=False)
+        from cleanfid import fid
+        with trange(600) as pbar:
+            for i in pbar:
+                noise = torch.randn((100, 32), device=device)
+                fake_batch = vae.generate(noise)
+                for j in range(100):
+                    vutils.save_image(fake_batch[j], "gen_images/"+genPath+"/g"+str(i*100 + j)+".png")
+
+        print("Test stats exist for mnist: ", fid.test_stats_exists("mnist", mode="clean"))
+        if not fid.test_stats_exists("mnist", mode="clean"):
+            print("Creating test stats for mnist.")
+            fid.make_custom_stats("mnist", "./mnist_png/training/", mode="clean")
+            print("Test stats created for mnist.")
+
+        print("Calculating FID Score for", genPath)
+        fidscore = fid.compute_fid("./gen_images/"+genPath+"/", 
+                                dataset_name="mnist", 
+                                mode="clean", 
+                                dataset_split="custom",
+                                num_workers=8)
+        print("FID Scores calculated.")
+        print("Calculating KID Scores for", genPath)
+        kidscore = fid.compute_kid("./gen_images/"+genPath+"/", 
+                                dataset_name="mnist", 
+                                mode="clean", 
+                                dataset_split="custom",
+                                num_workers=8)
+        print("KID Scores calculated.")
+
+        print(f"FID Score for {genPath}: {fidscore}")
+        print(f"KID Score for {genPath}: {kidscore}")

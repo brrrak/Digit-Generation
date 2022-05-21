@@ -94,8 +94,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=int, default=1, help='Number of training epochs.')
-    parser.add_argument('--visualize', type=bool, default=0, help='Whether to visualize training loss.')
-    parser.add_argument('--save_trained', type=bool, default=0, help='Whether to save the trained model.')
+    parser.add_argument('--visualize', type=int, default=1, help='Whether to visualize training loss.')
+    parser.add_argument('--save_trained', type=int, default=0, help='Whether to save the trained model.')
     opt = parser.parse_args()
     print(opt)
 
