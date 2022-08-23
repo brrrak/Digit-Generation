@@ -1,9 +1,0 @@
-*.pdf
-data/*
-__pycache__/*
-*.ipynb
-.ipynb_checkpoints/*
-report/*
-gen_images/*
-mnist_png/*
-imgsDuringTraining/*
